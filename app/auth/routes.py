@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_user
+from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.auth import auth
@@ -10,8 +10,11 @@ from app.models.users import User
 
 @auth.route('/login')
 def login():
-    form = LoginForm()
-    return render_template('auth/login.html', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    else:
+        form = LoginForm()
+        return render_template('auth/login.html', form=form)
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -26,12 +29,15 @@ def login_post():
         return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
 
     login_user(user, remember=remember)
-    return redirect(url_for('main.index'))
+    return redirect(url_for('cabinet.get_cabinets'))
 
 @auth.route('/signup')
 def signup():
-    form = SignupForm()
-    return render_template('auth/signup.html', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    else:
+        form = SignupForm()
+        return render_template('auth/signup.html', form=form)
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -54,7 +60,8 @@ def signup_post():
 
     return redirect(url_for('auth.login'))
 
-
+@login_required
 @auth.route('/logout')
 def logout():
-    return 'Logout'
+    logout_user()
+    return redirect(url_for('main.index'))
