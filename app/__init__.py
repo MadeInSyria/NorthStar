@@ -1,5 +1,8 @@
 from flask import Flask
 from flask_bootstrap import Bootstrap5
+from flask_migrate import Migrate
+from flask_login import LoginManager
+
 from config import Config
 from .extensions import db
 
@@ -11,6 +14,11 @@ def create_app(config_class=Config):
     Bootstrap5(app)
 
     db.init_app(app)
+    migrate = Migrate(app, db)
+    
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
 
     # blueprint for auth routes in our app
     from app.auth import auth as auth_blueprint
