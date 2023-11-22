@@ -1,0 +1,7 @@
+#rename this file to .env and add your secrets
+MYSQL_HOST = "localhost"
+MYSQL_PORT = "3306"
+MYSQL_USER = "foo"
+MYSQL_PASS = "bar"
+MYSQL_DB = "northstar"
+SECRET_KEY "SomeSecretKey"
