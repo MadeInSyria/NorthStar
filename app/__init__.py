@@ -38,4 +38,8 @@ def create_app(config_class=Config):
     from app.cabinet import cabinet as cabinet_blueprint
     app.register_blueprint(cabinet_blueprint)
     
+    # blueprint for drawers
+    from app.drawer import drawer as drawer_blueprint
+    app.register_blueprint(drawer_blueprint)
+    
     return app

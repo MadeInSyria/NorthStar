@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from app.cabinet import cabinet
 from app.cabinet.helpers import CreateCabinetForm
 from app.extensions import db
-from app.models.cabinet import Cabinet
+from app.models.cabinets import Cabinet
 
 
 @login_required
@@ -12,6 +12,12 @@ from app.models.cabinet import Cabinet
 def get_cabinets():
     cabinets = current_user.cabinets
     return render_template('cabinet/all.html', cabinets=cabinets)
+
+@login_required
+@cabinet.route('/<cabinet_id>')
+def get_cabinet(cabinet_id):
+    cabinet= Cabinet.query.get(cabinet_id)
+    return render_template('cabinet/cabinet.html', cabinet=cabinet)
 
 @login_required
 @cabinet.route('/create')
@@ -24,7 +30,7 @@ def create_cabinet_form():
 def create_cabinet():
     name = request.form.get('name')
     x = request.form.get('x')
-    y = True if request.form.get('y') else False
+    y = request.form.get('y')
     
     new_cabinet = Cabinet(name=name, x=x, y=y, user_id=current_user.id)
 

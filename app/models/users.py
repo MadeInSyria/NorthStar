@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 from app.extensions import db
-from app.models.cabinet import Cabinet
+from app.models.cabinets import Cabinet
 
 class User(UserMixin, db.Model):
     

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content%}
+<br/>
+<div class="container-md">
+    <h2>{{cabinet.name }}</h2>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+        {{ messages[0] }}.</a>.
+    </div>
+    {% endif %}
+    {% endwith %}
+    <br />
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Cabinet Summary
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <table class="table">
+                    <tbody>
+                      <tr>
+                        <td>Name</td>
+                        <td>{{ cabinet.name }}</td>
+                      </tr>
+                      <tr>
+                        <td>Cabinet width</td>
+                        <td>{{ cabinet.x }}</td>
+                      </tr>
+                      <tr>
+                        <td>Cabinet height</td>
+                        <td>{{ cabinet.y }}</td>
+                      </tr>
+                      <tr>
+                        <td>Cabinet IP</td>
+                        <td>192.168.4.5</td>
+                      </tr>
+                      <tr>
+                        <td>Total different components</td>
+                        <td>115</td>
+                      </tr>
+                      <tr>
+                        <td>Filled percentage</td>
+                        <td>10%</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    <br />
+    <div class="text-center">
+        <a class="btn btn-dark" href="#" role="button" style="width:48%">Check out components</a>
+        <a class="btn btn-dark" href="/drawers/create" role="button" style="width:48%">Add drawers</a>
+    </div>
+    <br/>
+    <div class="container-fluid text-center">
+        {% for i in range(cabinet.y) %}
+        <div class="row">
+            {% for j in range(cabinet.x) %}
+            <div class="col">
+                <figure class="figure">
+                    X:{{j+1}} <br />
+                    Y:{{i+1}}
+                </figure>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor%}
+    </div>
+</div>
+{% endblock %}
