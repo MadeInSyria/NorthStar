@@ -57,18 +57,19 @@
     <br />
     <div class="text-center">
         <a class="btn btn-dark" href="#" role="button" style="width:48%">Check out components</a>
-        <a class="btn btn-dark" href="/drawers/create" role="button" style="width:48%">Add drawers</a>
+        <a class="btn btn-dark" href="{{ url_for('cabinet.drawer.create_drawer_form', cabinet_id=cabinet.id) }}" role="button" style="width:48%">Add drawers</a>
     </div>
     <br/>
-    <div class="container-fluid text-center">
+    <div class="container">
         {% for i in range(cabinet.y) %}
-        <div class="row">
+        <div class="row" style="height:{{1/cabinet.y*100}}%">
             {% for j in range(cabinet.x) %}
-            <div class="col">
-                <figure class="figure">
-                    X:{{j+1}} <br />
-                    Y:{{i+1}}
-                </figure>
+            {% if (j+1,i+1) in drawer_map%}
+            <div class="col align-self-center" style="height:100%;width:{{1/cabinet.y*100}}%;background-color:grey">
+            {% else %}
+            <div class="col align-self-center" style="height:100%;width:{{1/cabinet.y*100}}%">
+            {% endif %}
+                {{ j + 1 + i * cabinet.x}} <br />
             </div>
             {% endfor %}
         </div>

@@ -2,7 +2,7 @@ from flask import redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.cabinet import cabinet
-from app.cabinet.helpers import CreateCabinetForm
+from app.cabinet.helpers import CreateCabinetForm, generate_drawer_map
 from app.extensions import db
 from app.models.cabinets import Cabinet
 
@@ -17,7 +17,8 @@ def get_cabinets():
 @cabinet.route('/<cabinet_id>')
 def get_cabinet(cabinet_id):
     cabinet= Cabinet.query.get(cabinet_id)
-    return render_template('cabinet/cabinet.html', cabinet=cabinet)
+    drawer_map = generate_drawer_map(cabinet.drawers)
+    return render_template('cabinet/cabinet.html', cabinet=cabinet, drawer_map=drawer_map)
 
 @login_required
 @cabinet.route('/create')
