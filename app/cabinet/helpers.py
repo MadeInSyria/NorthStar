@@ -11,8 +11,9 @@ class CreateCabinetForm (FlaskForm):
 
 
 def generate_drawer_map(drawers):
-    drawer_map = []
+    drawer_map = [[]]
     for drawer in drawers:
         drawer_map.append((drawer.x, drawer.y))
+        drawer_map[0].append(drawer.id)
         
     return drawer_map
