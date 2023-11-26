@@ -2,11 +2,19 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.component import component
-from app.component.helpers import CreateComponentForm, UpdateComponentForm, component_ownership_validation
+from app.component.helpers import CheckoutComponentForm, CreateComponentForm, UpdateComponentForm, component_ownership_validation
 from app.extensions import db
 from app.models.components import Component
 from app.models.drawers import Drawer
 
+
+@login_required
+@component.route('/components')
+def checkout_component_form():
+    
+    form = CheckoutComponentForm()
+    
+    return render_template('component/checkout.html', form=form)
 
 @login_required
 @component.route('<drawer_id>/create')

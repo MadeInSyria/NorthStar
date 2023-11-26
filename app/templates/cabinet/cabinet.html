@@ -56,7 +56,7 @@
       </div>
     <br />
     <div class="text-center">
-        <a class="btn btn-dark" href="#" role="button" style="width:48%">Check out components</a>
+        <a class="btn btn-dark" href="{{ url_for('cabinet.drawer.component.checkout_component_form') }}" role="button" style="width:48%">Check out components</a>
         <a class="btn btn-dark" href="{{ url_for('cabinet.drawer.create_drawer_form', cabinet_id=cabinet.id) }}" role="button" style="width:48%">Add drawers</a>
     </div>
     <br />

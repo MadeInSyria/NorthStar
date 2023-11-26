@@ -1,10 +1,29 @@
 from flask import abort, flash, redirect, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, SubmitField
+from sqlalchemy import cast, String
+from wtforms import IntegerField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import DataRequired
 
+from app.extensions import db
+from app.models.cabinets import Cabinet
 from app.models.components import Component
+from app.models.drawers import Drawer
+
+
+class CheckoutComponentForm (FlaskForm):
+    name = SelectMultipleField('ComponentName', validators=[DataRequired()], coerce=int)
+    submit = SubmitField()
+    
+    def __init__(self):
+        super(CheckoutComponentForm, self).__init__()
+        cabinets_id = db.select(Cabinet.id).filter_by(user_id=current_user.id)
+        drawers_id = db.select(Drawer.id).where(Drawer.cabinet_id.in_(cabinets_id))
+        components = Component.query.where(Component.drawer_id.in_(drawers_id))
+        result = db.session.execute(components).fetchall()
+        
+        choices = [(component.id, component.name) for component in components] 
+        self.name.choices = choices
 
 class CreateComponentForm (FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
