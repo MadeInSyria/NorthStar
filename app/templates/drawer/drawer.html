@@ -30,7 +30,33 @@
         </tbody>
     </table>
     <div class="text-center">
-        <a class="btn btn-dark" href="#" role="button" style="width:100%">Add component</a>
+        <a class="btn btn-dark" href="{{ url_for('.component.create_component_form', drawer_id=drawer.id)}}" role="button" style="width:100%">Add component</a>
     </div>
+    <br />
+    <h3>Components</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for component in components%}
+        <tr>
+          <th scope="row">{{ component.id }}</th>
+          <td>{{ component.name }}</td>
+          <td>{{ component.quantity }}</td>
+          <td>
+            <a class="btn btn-dark" href="{{ url_for('.component.update_component_form', component_id=component.id, drawer_id=drawer.id)}}" role="button" >Update</a>
+            <a class="btn btn-danger" href="{{ url_for('.component.delete_component', component_id=component.id)}}" role="button" data-methode="delete">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
     <br />
 {% endblock %}

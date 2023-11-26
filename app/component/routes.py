@@ -1,41 +1,71 @@
-from flask import abort, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.component import component
-from app.component.helpers import CreateComponentForm
+from app.component.helpers import CreateComponentForm, UpdateComponentForm, component_ownership_validation
 from app.extensions import db
 from app.models.components import Component
 from app.models.drawers import Drawer
 
 
 @login_required
-@component.route('/<drawer_id>/')
-def get_components_by_drawer(drawer_id):
-    drawer = Drawer.query.get(drawer_id)
-    
-    if drawer == None:
-        abort(404)
-        
-    components = Component.query.filter_by(drawer_id=drawer.id)
-    
-    return render_template('components/by_drawers.html', component=component)
-
-@login_required
 @component.route('<drawer_id>/create')
-def create_component_form():
+def create_component_form(drawer_id):
     form = CreateComponentForm()
     return render_template('component/create.html', form=form)
 
 @login_required
-@component.route('/create', methods=['POST'])
-def create_cabinet():
+@component.route('<drawer_id>/create', methods=['POST'])
+def create_component(drawer_id):
     name = request.form.get('name')
-    x = request.form.get('x')
-    y = request.form.get('y')
+    quantity = request.form.get('quantity')
     
-    new_cabinet = Component(name=name, x=x, y=y, user_id=current_user.id)
+    drawer = Drawer.query.get(drawer_id)
+    
+    if drawer == None:
+        flash('This drawer does not exist.')
+        return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer_id))
+    
+    if drawer.cabinet.user.id != current_user.id:
+        flash('This cabinet is not owned by the user.')
+        return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer_id))
+    
+    if drawer.compartments <= len(drawer.components):
+        flash('This drawer is already full.')
+        return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer_id))
+        
+    new_component = Component(name=name, quantity=quantity, drawer_id=drawer_id)
 
-    db.session.add(new_cabinet)
+    db.session.add(new_component)
     db.session.commit()
     
-    return redirect(url_for('cabinet.get_cabinets'))
+    return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer_id))
+
+@login_required
+@component.route('<component_id>')
+def delete_component(component_id):
+    component = component_ownership_validation(component_id)
+    
+    db.session.delete(Component.query.get(component_id))
+    db.session.commit()
+    
+    return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=component.drawer.id))
+
+@login_required
+@component.route('<drawer_id>/update/<component_id>')
+def update_component_form(component_id, drawer_id):
+    component = component_ownership_validation(component_id)
+    
+    form = UpdateComponentForm(obj=component)
+    return render_template('component/create.html', form=form)
+
+@login_required
+@component.route('<drawer_id>/update/<component_id>', methods=['POST'])
+def update_component(component_id, drawer_id):
+    component = component_ownership_validation(component_id)
+    
+    component.name = request.form.get('name')
+    component.quantity = request.form.get('quantity')
+    db.session.commit()
+    
+    return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer_id))

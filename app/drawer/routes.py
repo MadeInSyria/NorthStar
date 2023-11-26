@@ -21,8 +21,10 @@ def get_drawer(drawer_id):
     
     cabinet_x = drawer.cabinet.x
     cabinet_y = drawer.cabinet.y
+    
+    components = drawer.components
 
-    return render_template('drawer/drawer.html', drawer=drawer, cabinet_x=cabinet_x, cabinet_y=cabinet_y)
+    return render_template('drawer/drawer.html', drawer=drawer, cabinet_x=cabinet_x, cabinet_y=cabinet_y, components=components)
 
 @login_required
 @drawer.route('<cabinet_id>/create')

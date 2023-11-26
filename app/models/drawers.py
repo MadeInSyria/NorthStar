@@ -5,7 +5,7 @@ class Drawer(db.Model):
     
     __tablename__ = 'drawers'
     
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
     x = db.Column(db.Integer, nullable=False)
     y = db.Column(db.Integer, nullable=False)
     compartments = db.Column(db.Integer, nullable=False, default=1)
