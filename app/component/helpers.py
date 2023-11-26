@@ -12,7 +12,7 @@ from app.models.drawers import Drawer
 
 
 class CheckoutComponentForm (FlaskForm):
-    name = SelectMultipleField('ComponentName', validators=[DataRequired()], coerce=int)
+    components = SelectMultipleField('Component Name', validators=[DataRequired()], coerce=int)
     submit = SubmitField()
     
     def __init__(self):
@@ -20,10 +20,9 @@ class CheckoutComponentForm (FlaskForm):
         cabinets_id = db.select(Cabinet.id).filter_by(user_id=current_user.id)
         drawers_id = db.select(Drawer.id).where(Drawer.cabinet_id.in_(cabinets_id))
         components = Component.query.where(Component.drawer_id.in_(drawers_id))
-        result = db.session.execute(components).fetchall()
         
         choices = [(component.id, component.name) for component in components] 
-        self.name.choices = choices
+        self.components.choices = choices
 
 class CreateComponentForm (FlaskForm):
     name = StringField('Name', validators=[DataRequired()])

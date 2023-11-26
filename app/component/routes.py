@@ -9,17 +9,37 @@ from app.models.drawers import Drawer
 
 
 @login_required
-@component.route('/components')
+@component.route('/checkout')
 def checkout_component_form():
-    
     form = CheckoutComponentForm()
     
-    return render_template('component/checkout.html', form=form)
+    return render_template('component/checkout_form.html', form=form)
+
+@login_required
+@component.route('/checkout', methods=['POST'])
+def checkout_component():
+    components = request.form.getlist('components')
+    checkout_list = dict()
+    
+    for c in components:
+        component = Component.query.get(c)
+        drawer = component.drawer
+        cabinet = drawer.cabinet
+        if cabinet not in checkout_list:
+            checkout_list[cabinet] = dict()
+        
+        if drawer not in checkout_list[cabinet]:
+            checkout_list[cabinet][drawer] = []
+        
+        checkout_list[cabinet][drawer].append(component)
+    
+    return render_template('component/checkout.html', checkout_list=checkout_list)
 
 @login_required
 @component.route('<drawer_id>/create')
 def create_component_form(drawer_id):
     form = CreateComponentForm()
+    
     return render_template('component/create.html', form=form)
 
 @login_required
