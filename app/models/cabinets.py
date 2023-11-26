@@ -9,6 +9,7 @@ class Cabinet(db.Model):
     name = db.Column(db.String(1000), nullable=False)
     x = db.Column(db.Integer, nullable=False)
     y = db.Column(db.Integer, nullable=False)
+    host = db.Column(db.String(1000), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', back_populates='cabinets')
     drawers = db.relationship('Drawer', back_populates='cabinet')

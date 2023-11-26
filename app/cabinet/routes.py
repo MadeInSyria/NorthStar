@@ -30,10 +30,11 @@ def create_cabinet_form():
 @cabinet.route('/create', methods=['POST'])
 def create_cabinet():
     name = request.form.get('name')
+    host = request.form.get('host')
     x = request.form.get('x')
     y = request.form.get('y')
     
-    new_cabinet = Cabinet(name=name, x=x, y=y, user_id=current_user.id)
+    new_cabinet = Cabinet(name=name, x=x, y=y, host=host, user_id=current_user.id)
 
     db.session.add(new_cabinet)
     db.session.commit()

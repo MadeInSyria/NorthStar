@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired
 
 class CreateCabinetForm (FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
+    host = StringField('Host/IP', validators=[DataRequired()])
     x = IntegerField('Height in units', validators=[DataRequired()])
     y = IntegerField('Width in units', validators=[DataRequired()])
     submit = SubmitField()
