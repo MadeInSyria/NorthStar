@@ -1,8 +1,10 @@
+import requests
+
 from flask import abort, flash, redirect, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from sqlalchemy import cast, String
-from wtforms import IntegerField, SelectMultipleField, StringField, SubmitField
+from wtforms import IntegerField, HiddenField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import DataRequired
 
 from app.extensions import db
@@ -23,6 +25,9 @@ class CheckoutComponentForm (FlaskForm):
         
         choices = [(component.id, component.name) for component in components] 
         self.components.choices = choices
+
+class ClearLEDForm (FlaskForm):
+    submit = SubmitField('Clear all LEDs')
 
 class CreateComponentForm (FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
@@ -47,3 +52,25 @@ def component_ownership_validation(component_id):
         return redirect(url_for('cabinet.drawer.get_drawer', drawer_id=drawer.id))
     
     return component
+
+def turn_cabinet_led_on(checkout_list):
+    for cabinet, drawers in checkout_list.items():
+        host = cabinet.host
+        for drawer in drawers:
+            led_number = compute_led_number(drawer.x, drawer.y, cabinet.x)
+            requests.post(f'http://{host}/led_on', data={'led_list': led_number})
+            
+
+def turn_cabinet_led_off():
+    for cabinet in current_user.cabinets:
+        requests.get(f'http://{cabinet.host}/all_led_off')
+            
+            
+            
+def compute_led_number(drawer_x, drawer_y, cabinet_x):
+    if drawer_y % 2 == 0:
+        led_number = cabinet_x * drawer_y - drawer_x 
+    else:
+        led_number = (drawer_x + (drawer_y -1) * cabinet_x) - 1
+        
+    return led_number

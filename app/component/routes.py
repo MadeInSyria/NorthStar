@@ -1,9 +1,12 @@
+import requests
+
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.component import component
-from app.component.helpers import CheckoutComponentForm, CreateComponentForm, UpdateComponentForm, component_ownership_validation
+from app.component.helpers import ClearLEDForm, CheckoutComponentForm, CreateComponentForm, UpdateComponentForm, component_ownership_validation, turn_cabinet_led_on, turn_cabinet_led_off
 from app.extensions import db
+from app.models.cabinets import Cabinet
 from app.models.components import Component
 from app.models.drawers import Drawer
 
@@ -25,6 +28,7 @@ def checkout_component():
         component = Component.query.get(c)
         drawer = component.drawer
         cabinet = drawer.cabinet
+        
         if cabinet not in checkout_list:
             checkout_list[cabinet] = dict()
         
@@ -33,7 +37,15 @@ def checkout_component():
         
         checkout_list[cabinet][drawer].append(component)
     
-    return render_template('component/checkout.html', checkout_list=checkout_list)
+    turn_cabinet_led_on(checkout_list)
+    form = ClearLEDForm()
+    return render_template('component/checkout.html', checkout_list=checkout_list, form=form)
+
+@login_required
+@component.route('/clear_led', methods=['POST'])
+def clear_led():
+    turn_cabinet_led_off()
+    return redirect(url_for('cabinet.get_cabinets'))
 
 @login_required
 @component.route('<drawer_id>/create')
