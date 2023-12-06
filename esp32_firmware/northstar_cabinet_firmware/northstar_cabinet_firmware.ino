@@ -28,21 +28,18 @@ void setup()
   // Turn on a specific LED
   ESPEssentials::WebServer.on("/led_on", HTTP_POST, [&]() {
     // Get the LED list
-    String led_list = ESPEssentials::WebServer.arg("led_list");
-    char buffer[led_list.length() + 1];
-    led_list.toCharArray(buffer, led_list.length() + 1);
+    String led = ESPEssentials::WebServer.arg("led");
+    String color_r = ESPEssentials::WebServer.arg("r");
+    String color_g = ESPEssentials::WebServer.arg("g");
+    String color_b = ESPEssentials::WebServer.arg("b");
 
-    char *token = strtok(buffer, ",");
-
-    while (token != NULL) {
-      int led = atoi(token);
-      leds[led] = CRGB::Red;
-      Serial.println(token);
-      token = strtok(NULL, ",");
-    }
+    leds[led.toInt()].r = color_r.toInt();
+    leds[led.toInt()].g = color_g.toInt();
+    leds[led.toInt()].b = color_b.toInt();
+    Serial.println("LED: " + led);
     FastLED.show();
 
-    ESPEssentials::WebServer.send(200, "text/plain", led_list);
+    ESPEssentials::WebServer.send(200, "text/plain", led);
   });
 
   // Turn off all LEDs
