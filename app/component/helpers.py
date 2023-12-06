@@ -3,7 +3,7 @@ import requests
 from flask import abort, flash, redirect, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from sqlalchemy import cast, String
+import distinctipy
 from wtforms import IntegerField, HiddenField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import DataRequired
 
@@ -56,9 +56,19 @@ def component_ownership_validation(component_id):
 def turn_cabinet_led_on(checkout_list):
     for cabinet, drawers in checkout_list.items():
         host = cabinet.host
+        colors_f = distinctipy.get_colors(len(drawers))
+        colors = []
+        for color in colors_f:
+            colors.append(distinctipy.get_rgb256(color))
+        print(colors)
+        color_index = 0
         for drawer in drawers:
             led_number = compute_led_number(drawer.x, drawer.y, cabinet.x)
-            requests.post(f'http://{host}/led_on', data={'led_list': led_number})
+            requests.post(f'http://{host}/led_on', data={'led': led_number,
+                                                         'r': colors[color_index][0],
+                                                         'g': colors[color_index][1],
+                                                         'b': colors[color_index][2]})
+            color_index += 1
             
 
 def turn_cabinet_led_off():
